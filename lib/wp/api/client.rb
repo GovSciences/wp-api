@@ -54,7 +54,7 @@ module WP::API
     end
 
     def url_for(fragment, query)
-      url = "#{@scheme}://#{@host}/wp-json/#{fragment}"
+      url = "#{@scheme}://#{@host}/wp-json/wp/v2/#{fragment}"
       url << ("?" + params(query)) unless query.empty?
 
       url
