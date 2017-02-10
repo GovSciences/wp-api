@@ -10,7 +10,7 @@ module WP::API
 
     attr_accessor :host
 
-    DIRECT_PARAMS = %w(type context filter)
+    DIRECT_PARAMS = %w(type context filter slug)
 
     def initialize(host:, scheme: 'http', user: nil, password: nil)
       @scheme = scheme
@@ -31,7 +31,7 @@ module WP::API
       should_raise_on_empty = query.delete(:should_raise_on_empty) { true }
       query = ActiveSupport::HashWithIndifferentAccess.new(query)
       path = url_for(resource, query)
-      
+
       response = if authenticate?
         Client.get(path, basic_auth: { username: @user, password: @password })
       else
@@ -64,8 +64,11 @@ module WP::API
       uri = Addressable::URI.new
       filter_hash = { page: query.delete('page') || 1 }
       query.each do |key, value|
-        filter_hash[key] = value if DIRECT_PARAMS.include?(key) || key.include?('[')
-        filter_hash["filter[#{key}]"] = value
+        if DIRECT_PARAMS.include?(key) || key.include?('[')
+          filter_hash[key] = value
+        else
+          filter_hash["filter[#{key}]"] = value
+        end
       end
       uri.query_values = filter_hash
 
