@@ -54,7 +54,10 @@ module WP::API
     end
 
     def url_for(fragment, query)
-      url = "#{@scheme}://#{@host}/wp-json/wp/v2/#{fragment}"
+      locale = query.delete(:locale) || ''
+      locale << '/' if locale.present?
+
+      url = "#{@scheme}://#{@host}/#{locale}wp-json/wp/v2/#{fragment}"
       url << ("?" + params(query)) unless query.empty?
 
       url
